@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSS reader</title>
+<script src="https://cdn.echs.top/js/fxp.5.5.9.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/bulma/1.0.4/css/bulma.min.css" crossorigin="anonymous">
+<style>
+body{background-color:#f0f2f5;padding:2rem 1rem}.container{max-width:800px}.feed-content img,.feed-content video{max-width:100%;height:auto;border-radius:8px;margin-top:1rem}.card{transition:transform .2s,box-shadow .2s;border-radius:12px}.card:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,.1)}
+/* 头部点击区域的样式 */
+.feed-header{cursor:pointer;border-radius:8px;padding:10px;transition:background-color .2s}
+/* 鼠标悬浮在头部时背景色变化增强交互感 */
+.feed-header:hover{background-color:#f8f9fa}
+/* 展开提示样式 */
+.toggle-hint{font-size:.8rem;color:#b5b5b5;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container"><h1 class="title is-2 has-text-centered has-text-dark mb-6">RSS reader</h1><div id="feed-container" class="has-text-centered has-text-grey mt-6">正在获取内容，请稍候...</div></div>
+<script>
+// 数据源(需要跨域支持)
+const MY_RSS_URL='https://rss.echs.top/api/query.php?user=echsfxy@gmail.com&t=5B7NmWZkdJ8o2fh4JBhskm&f=rss';
+// 控制折叠/展开
+function toggleContent(id){const contentDiv=document.getElementById(id);if(contentDiv){
+// 如没有is-hidden就加上
+contentDiv.classList.toggle('is-hidden');}}async function fetchFeedDirectly(){const container=document.getElementById('feed-container');try{const response=await fetch(MY_RSS_URL);if(!response.ok)throw new Error(`服务器响应错误: ${response.status}`);const xmlText=await response.text();const parser=new fxp.XMLParser({ignoreAttributes:!1,attributeNamePrefix:"@_"});const result=parser.parse(xmlText);const items=result.rss?.channel?.item;if(!items)throw new Error('未获取到文章数据，可能是订阅源为空。');container.innerHTML='';const itemsArray=Array.isArray(items)?items:[items];
+// 遍历文章时，加入索引参数index生成ID
+itemsArray.forEach((item,index)=>{const article=document.createElement('div');article.className='card mb-5';const content=item["content:encoded"]||item.description||'无正文内容';
+// 时间格式化：英文时间变成 YYYY-MM-DD HH:MM
+let formattedDate=item.pubDate;try{const d=new Date(item.pubDate);if(!isNaN(d)){
+// 数字补零
+const pad=(n)=>String(n).padStart(2,'0');formattedDate=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;}}catch(e){}article.innerHTML=`<div class="card-content" style="padding: 1rem;">
+<div class="feed-header" onclick="toggleContent('content-${index}')"><h2 class="title is-4 mb-2">
+<a href="${item.link}" target="_blank" class="has-text-link-dark" onclick="event.stopPropagation()">${item.title}</a></h2><p class="subtitle is-6 has-text-grey mb-0">🕒 ${formattedDate} &nbsp;|&nbsp; ✍️ ${item.author||item["dc:creator"]||'佚名'}</p><div class="toggle-hint">▼ 点击展开/折叠正文</div></div>
+<div id="content-${index}" class="content feed-content is-hidden mt-4 pt-4" style="border-top: 1px dashed #eee;">${content}</div></div>`;container.appendChild(article);});}catch(error){console.error(error);container.innerHTML=`<div class="notification is-danger is-light"><strong>加载失败 ❌</strong><br>错误详情: ${error.message}</div>`;}}fetchFeedDirectly();
+</script>
+</body>
+<script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/quicklink/3.0.1/quicklink.umd.min.js" crossorigin="anonymous"></script>
+<script>window.addEventListener('load', () => { quicklink.listen(); });</script>
+</html>
