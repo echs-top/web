@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script>const CONFIG = {
+title: '书签', //名称
+host: 'https://memos.echs.top', //memos0.27.1
+userid: '1', //creator_id
+pageSize: 500, // 加载数
+targetGroups: {
+    '设备': ['android', 'kernelsu', 'windows', '游戏', 'mihomo', '浏览器'],
+    '前端': ['博客论坛', '在线工具', '资源网站', '账号福利', '我的网站', '友情链接'],
+    '后端': ['项目收集', '建站资源', '服务器', '搭建教程', '自动签到', '网站工具']
+}, // 分组及从memos加载的标签
+capsule: 'true', // []()样式增强
+mdjs: { loading: 'false', url: 'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/marked/16.3.0/lib/marked.umd.min.js' }, // markdown渲染js
+fonts: 'true' // LXGW WenKai 字体
+};</script>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Loading...</title>
+<style>
+/* 主体 */
+:root{--text-main:#1f2937;--text-gray:#6b7280;--bg:#f9fafb;--card-bg:#ffffff;--accent:#3b82f6;--w:92%;--max-w:900px}header{position:relative;background:var(--card-bg);z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.04);padding:6px 0 5px}.container{width:var(--w);max-width:var(--max-w);margin:0 auto}.nav-groups{display:flex;flex-direction:column;gap:4px}.nav-row{display:flex;align-items:flex-start;gap:6px}.group-label{font-size:15px;font-weight:900;color:#000;background:none;padding:2px 6px 2px 0;text-shadow:1px 1px 2px rgba(0,0,0,0.25);min-width:30px;text-align:left;flex-shrink:0;letter-spacing:1px;margin-top:1px}.tag-list{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center}.tag-item{font-size:14px;color:var(--text-gray);cursor:pointer;padding:2px 5px;border-radius:4px;transition:all 0.2s}.tag-item:hover{background:#f3f4f6;color:#1f2937}.tag-item.active{color:var(--accent);background:#eff6ff;font-weight:600}.memo-list{padding-top:14px;padding-bottom:40px;display:flex;flex-direction:column;gap:12px}.memo-card{background:var(--card-bg);padding:20px 24px;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,0.03),0 1px 3px -1px rgba(0,0,0,0.02);animation:f .4s ease}@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.loading{text-align:center;padding:100px 0;color:#9ca3af;font-size:13px;letter-spacing:2px;font-weight:500}
+/* 简单markdown */
+.markdown-lite{font-size:15px;line-height:1.8;word-break:break-word;color:#374151}.markdown-lite strong{display:inline-block;font-weight:700;color:#111827;margin-right:8px;transform:translateY(1px)}.markdown-lite em{font-style:italic;color:#4b5563}.markdown-lite a{text-decoration:none;transition:all .25s ease}
+/* 链接样式(原胶囊) */
+.markdown-lite.capsule a{display:inline-block;margin:2px 10px 2px 0;font-size:14.5px;font-weight:normal;line-height:1.5;transition:all 0.2s}.markdown-lite.capsule a:hover{transform:translateY(-1px);filter:brightness(0.85);font-weight:700}
+/* 字体 */
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--text-main);-webkit-font-smoothing:antialiased}
+</style>
+</head>
+<body>
+<header><div class="container"><div class="nav-groups" id="ngp"></div></div></header>
+<main class="container memo-list" id="mct"><div class="loading">SYNCING...</div></main>
+<script>
+// 简单markdown
+const mk=t=>{if(!t)return'';if(CONFIG.mdjs.loading==='true'&&window.marked)return marked.parse(t);return t.replace(/\r\n/g,'\n').replace(/\n\n+/g,'<div style="margin-top:12px"></div>').replace(/\n/g,' ').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\[(.*?)\]\((.*?)\)/g,'<a href="$2" target="_blank">$1</a>');};const mc=[];const vibrantColors=['#e63946','#d90429','#e0475b','#f25c54','#f07167','#e85d04','#dc2f02','#f48c06','#d08c60','#cc7a00','#2a9d8f','#264653','#2dc653','#40916c','#52b788','#0077b6','#023e8a','#0096c7','#00b4d8','#48cae4','#7209b7','#560bad','#4cc9f0','#b5179e','#f72585','#3a0ca3','#3f37c9','#4361ee','#4895ef','#8338ec','#c9184a','#ff4d6d','#ff7b00','#ff9500','#ffaa00','#118ab2','#073b4c','#06d6a0','#1b9aaa','#0582ca','#8e24aa','#5e35b1','#3949ab','#43a047','#e53935'];
+// []()样式增强
+const fl=(t,e)=>{window.scrollTo({top:0,behavior:'smooth'});document.querySelectorAll('.tag-item').forEach(i=>i.classList.remove('active'));if(e)e.classList.add('active');const cls=CONFIG.capsule==='true'?'markdown-lite capsule':'markdown-lite';document.getElementById('mct').innerHTML=mc.filter(m=>m._t===t).map(m=>`<div class="memo-card"><div class="${cls}">${mk(m._p)}</div></div>`).join('');if(CONFIG.capsule==='true'){document.querySelectorAll('.memo-card').forEach(card=>{let availableColors=[...vibrantColors];card.querySelectorAll('.markdown-lite.capsule a').forEach(a=>{if(availableColors.length===0)availableColors=[...vibrantColors];const randomIndex=Math.floor(Math.random()*availableColors.length);const baseColor=availableColors[randomIndex];a.style.color=baseColor;availableColors.splice(randomIndex,1);});});}};
+// mdjs
+const ldJS=(u)=>new Promise(r=>{if(CONFIG.mdjs.loading!=='true')return r();const s=document.createElement('script');s.src=u;s.crossOrigin='anonymous';s.onload=r;document.head.appendChild(s);});async function init(){try{
+// 名称
+document.title=CONFIG.title;
+// mdjs
+await ldJS(CONFIG.mdjs.url);
+// 字体
+if(CONFIG.fonts===true||CONFIG.fonts==='true'){const l=document.createElement('link');l.href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/lxgw-wenkai-web/1.520.0/lxgwwenkaimono-medium/result.min.css';l.rel='stylesheet';l.crossOrigin='anonymous';document.head.appendChild(l);const s=document.createElement('style');s.textContent='*{font-family:"LXGW WenKai Mono Medium",sans-serif!important;}';document.head.appendChild(s);}
+// memos数据拉取解析
+const ats=Object.values(CONFIG.targetGroups).flat();const tf=`tag in [${ats.map(t=>`"${t}"`).join(',')}] && creator_id == ${CONFIG.userid}`;const res=await fetch(`${CONFIG.host}/api/v1/memos?pageSize=${CONFIG.pageSize}&filter=${encodeURIComponent(tf)}`);const data=await res.json();(data.memos||[]).forEach(m=>{const t=m.tags.find(x=>ats.includes(x));if(t)mc.push({_t:t,_p:m.content.trim().replace(new RegExp(`#${t}$`,'i'),'').trim()});});const nav=document.getElementById('ngp');let ft=null;Object.entries(CONFIG.targetGroups).forEach(([gn,ts])=>{const vts=ts.filter(t=>mc.some(m=>m._t===t));if(!vts.length)return;const r=document.createElement('div');r.className='nav-row';r.innerHTML=`<div class="group-label">${gn}</div><div class="tag-list">${vts.map(t=>{if(!ft)ft=t;return `<div class="tag-item" data-t="${t}" onclick="fl('${t}',this)">${t}</div>`;}).join('')}</div>`;nav.appendChild(r);});if(ft)fl(ft,document.querySelector(`[data-t="${ft}"]`));}catch(e){document.getElementById('mct').innerHTML='<div class="loading">OFFLINE</div>';}}init();
+</script>
+</body>
+<script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/quicklink/3.0.1/quicklink.umd.min.js" crossorigin="anonymous"></script>
+<script>window.addEventListener('load', () => { quicklink.listen(); });</script>
+</html>
