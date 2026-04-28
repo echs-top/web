@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="color-scheme" content="light dark">
+<title>我的动态</title>
+
+<script>
+const CONFIG = {
+    title: '近期动态',
+    host: 'https://memos.echs.top', 
+    url: 'https://notes.echs.top', //独立前端，为空使用host
+    userid: '2', 
+    pageSize: 50, 
+    artalk: {
+        server: 'https://comment.echs.top',
+        site: 'MEMOS'
+    }
+};
+</script>
+
+<link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/artalk/2.9.1/Artalk.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/lxgw-wenkai-web/1.520.0/lxgwwenkaimono-medium/result.min.css" crossorigin="anonymous">
+<script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/marked/16.3.0/lib/marked.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/artalk/2.9.1/Artalk.min.js" crossorigin="anonymous"></script>
+
+<style>
+/* 主体 (完美暗黑模式自适应 + 极简黑白边框) */
+:root{--text-main:#111827;--text-gray:#6b7280;--bg:#f4f6f8;--card-bg:rgba(255,255,255,.98);--card-bd:rgba(0,0,0,.4);--hdr-bg:rgba(255,255,255,.75);--btn-bg:#f3f4f6;--btn-tx:#4b5563;--btn-hv:#eff6ff;--div:#e5e7eb;--accent:#3b82f6;--w:92%;--max-w:1000px}@media(prefers-color-scheme:dark){:root{--text-main:#e5e7eb;--text-gray:#9ca3af;--bg:#111827;--card-bg:#1f2937;--card-bd:rgba(255,255,255,.4);--hdr-bg:rgba(31,41,55,.8);--btn-bg:#374151;--btn-tx:#d1d5db;--btn-hv:#4b5563;--div:#374151}}*{font-family:"LXGW WenKai Mono Medium",sans-serif!important}body{margin:0;background:var(--bg);color:var(--text-main);-webkit-font-smoothing:antialiased}header{background:var(--hdr-bg);border-bottom:1px solid rgba(128,128,128,.2);padding:24px 0;margin-bottom:24px;text-align:center}.container{width:var(--w);max-width:var(--max-w);margin:0 auto}.header-title{font-size:20px;font-weight:700;margin:0;letter-spacing:1px;color:var(--text-main)}.memo-list{padding-bottom:60px}.loading{text-align:center;padding:80px 0;color:var(--text-gray);font-size:14px;letter-spacing:1px}.memo-card{position:relative;background:var(--card-bg);border-radius:16px;padding:22px 24px;box-shadow:0 4px 6px -1px rgba(0,0,0,.05),0 2px 4px -2px rgba(0,0,0,.03);border:1px solid var(--card-bd);transition:transform .3s ease,box-shadow .3s ease;animation:fade-in .4s ease;margin-bottom:20px;break-inside:avoid;overflow:hidden}.memo-card:hover{box-shadow:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -4px rgba(0,0,0,.04);transform:translateY(-2px)}@keyframes fade-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media(min-width:768px){.memo-list{column-count:2;column-gap:20px}}.memo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.memo-time{font-size:13.5px;color:var(--text-gray);font-weight:500;display:flex;align-items:center;gap:6px}.memo-time svg{width:14px;height:14px;opacity:.7}.memo-actions-top{display:flex;gap:8px}.action-btn{background:var(--btn-bg);border:none;color:var(--btn-tx);font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;padding:6px 12px;border-radius:20px;transition:all .25s ease;text-decoration:none}.action-btn:hover{background:var(--btn-hv);color:var(--accent);transform:scale(1.03)}.action-btn svg{width:15px;height:15px;fill:currentColor}
+/* markdown解析处理 */
+.memo-content-wrapper{position:relative}.markdown-body{background-color:transparent!important;font-family:inherit!important;font-size:15.5px!important;color:var(--text-main)!important;transition:max-height .3s ease}.markdown-body a{color:var(--accent)!important;text-decoration:none!important}.markdown-body a:hover{text-decoration:underline!important}.markdown-body.collapsed{max-height:250px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,#000 50%,transparent 100%);mask-image:linear-gradient(to bottom,#000 50%,transparent 100%)}.expand-btn{display:none;text-align:center;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;padding-top:10px;margin-top:4px;letter-spacing:1px}.expand-btn:hover{color:#2563eb}.expand-btn.show{display:block}
+/* artalk */
+.atk-list-footer{display:none!important}.comments-wrapper{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--div)}.comments-wrapper.active{display:block;animation:fade-in .3s ease}
+</style>
+</head>
+<body>
+
+<header><div class="container"><h1 class="header-title" id="page-title">Loading...</h1></div></header>
+<main class="container memo-list" id="mct"><div class="loading">正在同步动态...</div></main>
+<div id="Comments" style="display: none;"></div>
+
+<script>
+/* 主体 */
+const fd=d=>new Date(d).toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:!1}).replace(/\//g,'-');
+/* markdown解析处理 */
+window.te=b=>{let c=b.previousElementSibling;c.classList.contains('collapsed')?(c.classList.remove('collapsed'),c.classList.add('expanded'),b.innerText='收起'):(c.classList.add('collapsed'),c.classList.remove('expanded'),b.innerText='展开全文')};const ch=e=>{if(e.classList.contains('expanded'))return;if(e.scrollHeight>250){e.classList.add('collapsed');e.nextElementSibling.classList.add('show')}};
+/* artalk */
+let ca=null;window.tc=(k,b)=>{let w=b.closest('.memo-card').querySelector('.comments-wrapper'),c=document.getElementById('Comments');if(w.contains(c)&&w.classList.contains('active'))return w.classList.remove('active');w.appendChild(c);document.querySelectorAll('.comments-wrapper').forEach(x=>x.classList.remove('active'));w.classList.add('active');c.style.display='block';ca&&ca.destroy();ca=Artalk.init({...CONFIG.artalk,el:'#Comments',pageKey:k,pageTitle:''})};
+/* memos api获取解析 */
+async function init(){document.title=CONFIG.title;document.getElementById('page-title').innerText=CONFIG.title;window.marked&&marked.use({breaks:!0});try{let r=await fetch(`${CONFIG.host}/api/v1/memos?pageSize=${CONFIG.pageSize}&filter=${encodeURIComponent(`creator_id == ${CONFIG.userid}`)}`),d=await r.json(),m=d.memos||[],c=document.getElementById('mct');if(!m.length)return c.innerHTML='<div class="loading">暂无动态，去发布一条吧</div>';c.innerHTML=m.map(i=>{let t=fd(i.updateTime||i.createTime),h=window.marked?marked.parse(i.content||''):i.content,s=`${CONFIG.url||CONFIG.host}/${i.name}`,k=`/${i.name}`;return`<div class="memo-card"><div class="memo-header"><div class="memo-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ${t}</div><div class="memo-actions-top"><a href="${s}" target="_blank" class="action-btn" title="查看原文"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>原文</a><button onclick="tc('${k}',this)" class="action-btn" title="展开评论"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>评论</button></div></div><div class="memo-content-wrapper"><div class="markdown-body">${h}</div><div class="expand-btn" onclick="te(this)">展开全文</div></div><div class="comments-wrapper"></div></div>`}).join('');document.querySelectorAll('.markdown-body').forEach(e=>{ch(e);e.querySelectorAll('img').forEach(i=>{i.complete||i.addEventListener('load',()=>ch(e))})})}catch(e){document.getElementById('mct').innerHTML='<div class="loading">加载失败，请检查网络或配置</div>'}}init();
+</script>
+</body>
+<script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/quicklink/3.0.1/quicklink.umd.min.js" crossorigin="anonymous"></script>
+<script>window.addEventListener('load', () => { quicklink.listen(); });</script>
+</html>
